@@ -15,7 +15,7 @@ def play(stdscr,P1,P2):
     border = Border(stdscr)
     p_left = Padel(stdscr,"left")
     p_right = Padel(stdscr,"right")
-    dt = 1/24 #Frame Rate
+    dt = 1/200 #Frame Rate
 
     Updates = [ball,p_left,p_right]
     #Game Loop
@@ -34,7 +34,7 @@ def play(stdscr,P1,P2):
         for pong_object in Updates:
             pong_object.update(dt,key)
         
-
+        ball.intersect(p_left,p_right)
         ball.draw()
         border.draw()
         p_left.draw()

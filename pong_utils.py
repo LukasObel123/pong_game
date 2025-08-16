@@ -174,17 +174,43 @@ class Ball(PongObject):
         super().__init__(stdscr,type="ball")
         self.pos_x = self.max_x // 2
         self.pos_y = (self.max_y- SCORECARD_OFFSET) // 2
-        self.vel_x = 1
+        self.vel_x = 20
         self.vel_y = 0
 
     def update(self,dt,key=""):
         self.pos_x = self.pos_x + self.vel_x*dt
         self.pos_y = self.pos_y + self.vel_y*dt
 
+    def intersect(self,padel_left,padel_right):
+        #Check intersection between ball and upper/lower boundary
+        if self.pos_y < 1 or self.pos_y > self.max_y-SCORECARD_OFFSET-1:
+            self.vel_y *= -1
+            
+        
+        if self.pos_x < 2:
+            #Checks for intersect with left padel
+            p_min = padel_left.pos_y - padel_left.height // 2
+            p_max = padel_left.pos_y + padel_left.height // 2
+            if p_min <= self.pos_y <= p_max:
+                self.vel_x *= -1
+                self.pos_x += 0.5
+        elif self.pos_x > self.max_x - 2:
+            #Checks for intersect with right padel
+            p_min = padel_right.pos_y - padel_right.height // 2
+            p_max = padel_right.pos_y + padel_right.height // 2
+            if p_min <= self.pos_y <= p_max:
+                self.vel_x *= -1
+                self.pos_x -= 0.5
+        
+        
+        
+
         
     def draw(self):
-        x = math.floor(self.pos_x)
-        y = math.floor(self.pos_y)
+        #x = math.floor(self.pos_x)
+        #y = math.floor(self.pos_y)
+        x = round(self.pos_x)
+        y = round(self.pos_y)
         self.stdscr.addch(y,x, 'O')
 
 class Padel(PongObject):
@@ -215,8 +241,10 @@ class Padel(PongObject):
         
 
     def draw(self):
-        for i in range(self.height):
-            self.stdscr.addch(self.pos_y+i,self.pos_x,'|')
+        half = self.height // 2
+        for i in range(-half, self.height - half):
+            self.stdscr.addch(self.pos_y + i, self.pos_x, '|')
+
 
 
 class Player:
